@@ -49,7 +49,7 @@ const seedRetweet = async (tweet) => {
         quoteTweetCount: 0,
         tweetType: "retweet",
         userId: "JoeBiden",
-        tweetIdL: tweet[0].id,
+        tweetId: tweet[0].id,
       },
       {
         commentCount: 0,
@@ -58,7 +58,7 @@ const seedRetweet = async (tweet) => {
         quoteTweetCount: 0,
         tweetType: "retweet",
         userId: "JoeBiden",
-        tweetIdL: tweet[1].id,
+        tweetId: tweet[1].id,
       },
     ];
     await Promise.all(_RETWEET.map((tweet) => Tweet.create(tweet)));
@@ -78,7 +78,7 @@ const seedRetweetWithQuote = async (tweet) => {
         quoteTweetCount: 0,
         tweetType: "retweet",
         userId: "NASA",
-        tweetIdL: tweet[0].id,
+        tweetId: tweet[0].id,
       },
       {
         content: "very sick",
@@ -88,10 +88,40 @@ const seedRetweetWithQuote = async (tweet) => {
         quoteTweetCount: 0,
         tweetType: "retweet",
         userId: "NASA",
-        tweetIdL: tweet[1].id,
+        tweetId: tweet[1].id,
       },
     ];
     await Promise.all(_QUOTE_TWEET.map((tweet) => Tweet.create(tweet)));
+  } catch (ex) {
+    console.log(ex);
+  }
+};
+
+const seedComment = async (tweet) => {
+  try {
+    const _COMMENT = [
+      {
+        content: "a comment to elon from NASA",
+        commentCount: 2,
+        likeCount: 3,
+        retweetCount: 0,
+        quoteTweetCount: 0,
+        tweetType: "comment",
+        userId: "NASA",
+        tweetId: tweet[0].id,
+      },
+      {
+        content: "a comment to elon from JoeBiden",
+        commentCount: 2,
+        likeCount: 3,
+        retweetCount: 0,
+        quoteTweetCount: 0,
+        tweetType: "comment",
+        userId: "JoeBiden",
+        tweetId: tweet[0].id,
+      },
+    ];
+    await Promise.all(_COMMENT.map((comment) => Tweet.create(comment)));
   } catch (ex) {
     console.log(ex);
   }
@@ -101,6 +131,7 @@ const seedAllTweet = async () => {
   const tweets = await seedTweet();
   await seedRetweet(tweets);
   await seedRetweetWithQuote(tweets);
+  await seedComment(tweets);
   return tweets;
 };
 

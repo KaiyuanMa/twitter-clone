@@ -7,10 +7,6 @@ const Follower = conn.define("follower", {
     defaultValue: Sequelize.UUIDV4,
     primaryKey: true,
   },
-  followerId: {
-    type: Sequelize.STRING,
-    allowNull: false,
-  },
 });
 
 module.exports = Follower;

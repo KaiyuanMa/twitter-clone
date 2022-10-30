@@ -4,11 +4,11 @@ const seedFollower = async () => {
     const _FOLLOWER = [
       {
         followerId: "NASA",
-        userId: "elonmusk",
+        followeeId: "elonmusk",
       },
       {
         followerId: "JoeBiden",
-        userId: "elonmusk",
+        followeeId: "elonmusk",
       },
     ];
     await Promise.all(_FOLLOWER.map((follower) => Follower.create(follower)));

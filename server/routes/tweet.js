@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const Op = require("sequelize").Op;
 const { Tweet, User } = require("../db");
 
 //Get a tweet
@@ -54,7 +55,7 @@ router.get("/quoteTweet/:tweetId", async (req, res, next) => {
     res.send(
       await Tweet.findAll({
         where: {
-          tweetId: req.params.tweetId,
+          id: req.params.tweetId,
           tweetType: "quote_tweet",
         },
       })
@@ -65,13 +66,13 @@ router.get("/quoteTweet/:tweetId", async (req, res, next) => {
 });
 
 //Get user tweets
-router.get("/:userId", async (req, res, next) => {
+router.get("/user/:userId", async (req, res, next) => {
   try {
     res.send(
       await Tweet.findAll({
         where: {
           userId: req.params.userId,
-          [Op.or]: [{ tweetType: comment }],
+          [Op.not]: [{ tweetType: "comment" }],
         },
       })
     );
@@ -81,10 +82,12 @@ router.get("/:userId", async (req, res, next) => {
 });
 
 //get user tweets with reply
-router.get("/withComments/:userId", async (req, res, next) => {
+router.get("/user/withComments/:userId", async (req, res, next) => {
   try {
     res.send(await Tweet.findAll({ where: { userId: req.params.userId } }));
   } catch (ex) {
     next(ex);
   }
 });
+
+module.exports = router;
