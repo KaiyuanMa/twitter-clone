@@ -6,9 +6,7 @@ router.get("/:userId", async (req, res, next) => {
   try {
     res.send(
       await User.findByPk(req.params.id, {
-        attributes: {
-          exclude: ["password"],
-        },
+        attributes: ["id", "nickName", "bio", "createdAt"],
       })
     );
   } catch (ex) {

@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { Follower, User } = require("../db");
+const isLoggedIn = require("./middleware");
 const Op = require("sequelize").Op;
 
 //Get user follower
@@ -18,7 +19,7 @@ router.get("/:userId", async (req, res, next) => {
       })
     );
   } catch (ex) {
-    console.log(ex);
+    next(ex);
   }
 });
 
@@ -37,7 +38,34 @@ router.get("/followee/:userId", async (req, res, next) => {
       })
     );
   } catch (ex) {
-    console.log(ex);
+    next(ex);
+  }
+});
+
+//Make a follow
+router.post("/:followeeId", isLoggedIn, async (req, res, next) => {
+  try {
+    res.send(
+      await Follower.create({
+        followerId: req.user.id,
+        followeeId: req.params.followeeId,
+      })
+    );
+  } catch (ex) {
+    next(ex);
+  }
+});
+
+//Unfollow
+router.delete("/:followeeId", isLoggedIn, async (req, res, next) => {
+  try {
+    const connection = Follower.findOne({
+      where: { followerId: req.user.id, followeeId: req.params.followeeId },
+    });
+    await connection.destroy();
+    res.sendStatus(202);
+  } catch (ex) {
+    next(ex);
   }
 });
 

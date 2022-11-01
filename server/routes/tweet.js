@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Op = require("sequelize").Op;
 const { Tweet, User } = require("../db");
+const isLoggedIn = require("./middleware");
 
 //Get a tweet
 router.get("/:tweetId", async (req, res, next) => {
@@ -85,6 +86,35 @@ router.get("/user/:userId", async (req, res, next) => {
 router.get("/user/withComments/:userId", async (req, res, next) => {
   try {
     res.send(await Tweet.findAll({ where: { userId: req.params.userId } }));
+  } catch (ex) {
+    next(ex);
+  }
+});
+
+router.post("/", isLoggedIn, async (req, res, next) => {
+  try {
+    const tweet = {
+      content: req.body.content,
+      tweetType: req.body.tweetType,
+      userId: req.user.id,
+    };
+    //Check if its comment retweet, and check if parent tweet Id is valid
+    if (req.body.tweetId) {
+      if (!(await Tweet.findByPk(req.body.tweetId))) throw "Tweet Not Found";
+      tweet.tweetId = req.body.tweetId;
+    }
+    res.send(await Tweet.create(tweet));
+  } catch (ex) {
+    next(ex);
+  }
+});
+
+router.delete("/:tweetId", isLoggedIn, async (req, res, next) => {
+  try {
+    const tweet = Tweet.findByPk(req.params.tweetId);
+    if (tweet.userId !== req.user.id) throw "No Access";
+    await tweet.destroy();
+    res.sendStatus(202);
   } catch (ex) {
     next(ex);
   }
